@@ -1,0 +1,1294 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
+<title>测试你的杀人狂人格 · 卷宗</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#08080a;
+  --glow1:#1e0c10;
+  --glow2:#15080b;
+  --panel:#101013;
+  --panel2:#151519;
+  --line:#242429;
+  --ink:#e6e1d7;
+  --dim:#7d786c;
+  --blood:#9e1418;
+  --blood2:#e5383b;
+}
+html,body{min-height:100%}
+body{
+  background:
+    radial-gradient(900px 520px at 50% -12%, var(--glow1) 0%, transparent 62%),
+    radial-gradient(700px 420px at 105% 105%, var(--glow2) 0%, transparent 58%),
+    var(--bg);
+  color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  line-height:1.75;
+  padding:28px 16px 64px;
+  -webkit-font-smoothing:antialiased;
+  font-size:16px;
+  position:relative;
+  overflow-x:hidden;
+  transition:background 1.2s ease;
+}
+/* 微恐：噪点 */
+body::before{
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:9998;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.035'/%3E%3C/svg%3E");
+  mix-blend-mode:overlay;
+}
+/* 微恐：扫描线 */
+body::after{
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:9997;
+  background:repeating-linear-gradient(180deg,rgba(255,255,255,.012) 0 1px,transparent 1px 3px);
+}
+.wrap{max-width:640px;margin:0 auto;position:relative;z-index:1}
+.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,"Courier New",monospace;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim)}
+.screen{display:none}
+.screen.active{display:block;animation:fade .4s ease}
+@keyframes fade{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+.card{
+  background:linear-gradient(180deg,var(--panel2),var(--panel));
+  border:1px solid var(--line);
+  border-radius:4px;
+  padding:28px 22px;
+  position:relative;
+  box-shadow:0 24px 60px -30px #000, inset 0 1px 0 #ffffff08;
+}
+.card::before{
+  content:"";position:absolute;left:0;top:0;width:100%;height:2px;
+  background:linear-gradient(90deg,transparent,var(--blood),transparent);opacity:.7;
+}
+
+/* ---------- 入口页 ---------- */
+.stamp{display:inline-block;border:1px solid var(--blood);color:var(--blood2);
+  padding:3px 10px;border-radius:2px;font-family:ui-monospace,monospace;
+  font-size:11px;letter-spacing:.24em;margin-bottom:22px}
+h1.title{
+  font-family:Georgia,"Songti SC","STSong",serif;
+  font-size:clamp(26px,7vw,38px);line-height:1.25;font-weight:600;letter-spacing:.02em;
+  margin-bottom:10px;
+}
+.title em{font-style:normal;color:var(--blood2);text-shadow:0 0 22px #e5383b66}
+.subtitle{color:var(--dim);font-size:14px;margin-bottom:26px}
+.hr{height:1px;background:var(--line);margin:22px 0}
+.disclaimer{
+  font-size:12.5px;color:#7d786d;line-height:1.9;
+  border-left:2px solid var(--blood);padding:10px 0 10px 14px;background:#ffffff05;
+}
+.meta{display:flex;gap:18px;flex-wrap:wrap;margin:24px 0 28px}
+.meta div{font-family:ui-monospace,monospace;font-size:11px;letter-spacing:.12em;color:var(--dim)}
+.meta b{display:block;color:var(--ink);font-size:20px;font-family:Georgia,serif;letter-spacing:0;margin-top:2px}
+
+button.btn{
+  width:100%;padding:16px;border-radius:3px;border:1px solid var(--blood);
+  background:linear-gradient(180deg,#8e1216,#6d0d11);color:#fff;
+  font-size:15px;letter-spacing:.16em;cursor:pointer;font-family:inherit;
+  transition:.2s;font-weight:500;
+}
+button.btn:hover{background:linear-gradient(180deg,#a4161a,#7d0f14);box-shadow:0 0 0 1px #e5383b40,0 10px 30px -12px #a4161a}
+button.btn:active{transform:translateY(1px)}
+button.btn:disabled{opacity:.35;cursor:not-allowed;box-shadow:none}
+button.btn.ghost{background:transparent;color:var(--dim);border-color:var(--line)}
+button.btn.ghost:hover{color:var(--ink);border-color:#3a3a42;box-shadow:none}
+
+/* ---------- 音乐按钮 ---------- */
+.music-btn{
+  position:fixed;top:14px;right:14px;z-index:9999;
+  width:42px;height:42px;border-radius:50%;
+  border:1px solid var(--line);background:#101013ee;
+  color:var(--dim);cursor:pointer;font-size:16px;
+  display:flex;align-items:center;justify-content:center;
+  backdrop-filter:blur(6px);
+  transition:.2s;
+}
+.music-btn:hover{color:var(--blood2);border-color:var(--blood)}
+.music-btn.on{color:var(--blood2);border-color:var(--blood);box-shadow:0 0 18px #a4161a55}
+.music-btn .pulse{
+  position:absolute;inset:-4px;border-radius:50%;
+  border:1px solid var(--blood);opacity:0;
+}
+.music-btn.on .pulse{animation:pulse 1.6s ease-out infinite}
+@keyframes pulse{0%{transform:scale(.9);opacity:.7}100%{transform:scale(1.5);opacity:0}}
+
+/* ---------- 答题页 ---------- */
+.topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.progress{height:2px;background:#ffffff0d;border-radius:2px;overflow:hidden;margin-bottom:30px}
+.progress i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--blood),var(--blood2));
+  transition:width .35s cubic-bezier(.4,0,.2,1)}
+.q-text{
+  font-family:Georgia,"Songti SC",serif;font-size:clamp(18px,5vw,22px);
+  line-height:1.6;font-weight:500;margin-bottom:26px;letter-spacing:.01em;
+}
+.options{display:flex;flex-direction:column;gap:10px}
+.opt{
+  display:flex;align-items:flex-start;gap:14px;width:100%;text-align:left;
+  padding:15px 16px;background:#ffffff05;border:1px solid var(--line);
+  border-left:2px solid #2e2e35;border-radius:3px;color:var(--ink);
+  font-size:15px;font-family:inherit;line-height:1.6;cursor:pointer;
+  transition:.18s;
+}
+.opt:hover{background:#ffffff0c;border-left-color:var(--blood);transform:translateX(2px)}
+.opt:active{transform:translateX(2px) scale(.995)}
+.opt-key{
+  font-family:ui-monospace,monospace;font-size:11px;color:var(--dim);
+  border:1px solid var(--line);border-radius:2px;padding:1px 6px;flex:0 0 auto;margin-top:3px;
+}
+.opt:hover .opt-key{color:var(--blood2);border-color:var(--blood)}
+
+/* ---------- 结果页 ---------- */
+.result-head{text-align:center;padding:8px 0 26px;border-bottom:1px solid var(--line);margin-bottom:26px}
+.result-kicker{font-family:ui-monospace,monospace;font-size:11px;letter-spacing:.3em;color:var(--blood2);margin-bottom:16px}
+.result-name{
+  font-family:Georgia,"Songti SC",serif;font-size:clamp(34px,10vw,52px);
+  line-height:1.1;font-weight:600;letter-spacing:.04em;
+  text-shadow:0 0 40px #a4161a55;
+}
+.result-sub{color:var(--dim);font-size:14px;letter-spacing:.22em;margin-top:12px}
+.duo{color:var(--dim);font-size:13px;margin-top:14px;letter-spacing:.06em}
+.duo b{color:var(--ink);font-weight:500}
+.matchbar{margin:24px 0 0;text-align:left}
+.matchbar .lab{display:flex;justify-content:space-between;margin-bottom:8px}
+.matchbar .track{height:3px;background:#ffffff0d;border-radius:2px;overflow:hidden}
+.matchbar .track i{display:block;height:100%;background:linear-gradient(90deg,var(--blood),var(--blood2));width:0;transition:width 1s cubic-bezier(.2,.8,.2,1)}
+
+.tags{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:26px}
+.tag{font-size:12px;padding:4px 11px;border:1px solid var(--line);border-radius:99px;color:var(--dim);background:#ffffff05}
+.tag.on{border-color:var(--blood);color:var(--blood2);background:#a4161a12}
+
+.rows{display:flex;flex-direction:column;gap:0;margin-bottom:26px}
+.row{display:flex;gap:16px;padding:13px 0;border-bottom:1px dashed #ffffff0d;font-size:14px}
+.row .k{flex:0 0 74px;color:var(--dim);font-size:12.5px;letter-spacing:.08em;padding-top:2px}
+.row .v{flex:1;color:#d8d3c9;line-height:1.7}
+.row:last-child{border-bottom:0}
+
+blockquote{
+  font-family:Georgia,"Songti SC",serif;font-size:17px;font-style:italic;
+  color:#cfc9bd;border-left:2px solid var(--blood);padding:6px 0 6px 16px;
+  margin:0 0 24px;line-height:1.7;
+}
+.analysis{
+  font-size:14.5px;color:#c9c4b9;line-height:1.95;background:#ffffff04;
+  border:1px solid var(--line);border-radius:3px;padding:18px;margin-bottom:26px;
+}
+.analysis b{color:var(--blood2);font-weight:500}
+.analysis p{margin-bottom:14px}
+.analysis p:last-child{margin-bottom:0}
+.share-box{
+  border:1px dashed var(--line);border-radius:3px;padding:14px;margin-bottom:22px;
+  font-size:12.5px;color:var(--dim);line-height:1.9;
+}
+.share-box code{color:var(--blood2);font-family:ui-monospace,monospace;font-size:12px;word-break:break-all}
+.footer{text-align:center;color:#5d594f;font-size:11.5px;margin-top:26px;letter-spacing:.1em;font-family:ui-monospace,monospace}
+
+/* ---------- 形象图 ---------- */
+.portrait{
+  width:190px;height:190px;margin:0 auto 20px;border-radius:6px;
+  overflow:hidden;border:1px solid var(--line);
+  box-shadow:0 16px 40px -20px #000, 0 0 30px #a4161a22;
+}
+.portrait svg{width:100%;height:100%;display:block}
+
+/* ---------- 答题反馈（底部打字机字幕）/ 颜色变化 ---------- */
+#flash{
+  position:fixed;inset:0;z-index:9400;pointer-events:none;opacity:0;
+  transition:opacity .6s ease;
+  background:radial-gradient(600px 400px at 50% 50%, #e5383b 0%, #7d0f14 55%, transparent 78%);
+}
+#subtitle{
+  position:fixed;left:50%;bottom:30px;transform:translateX(-50%) translateY(8px);
+  z-index:9500;max-width:560px;width:calc(100% - 40px);
+  padding:14px 18px;border-radius:3px;border:1px solid var(--blood);
+  background:linear-gradient(180deg,#1a0d10f2,#0d0d10f5);
+  box-shadow:0 12px 30px -12px #000, 0 0 24px #a4161a33;
+  opacity:0;pointer-events:none;transition:opacity .4s ease, transform .4s ease;
+  cursor:pointer;
+}
+#subtitle.show{opacity:1;pointer-events:auto;transform:translateX(-50%) translateY(0)}
+#subtitle-text{
+  font-family:Georgia,"Songti SC",serif;font-size:16px;line-height:1.75;
+  color:var(--ink);letter-spacing:.03em;min-height:1.75em;margin:0;
+}
+#subtitle-text .caret{
+  display:inline-block;width:2px;height:1em;background:var(--blood2);
+  margin-left:3px;vertical-align:-2px;animation:blink .75s steps(1) infinite;
+}
+@keyframes blink{50%{opacity:0}}
+
+/* ---------- 最终开放题 ---------- */
+#screen-final .card{text-align:center}
+#final-kicker{font-family:ui-monospace,monospace;font-size:11px;letter-spacing:.3em;color:var(--blood2);margin-bottom:20px}
+#final-text{
+  font-family:Georgia,"Songti SC",serif;font-size:clamp(22px,6vw,30px);
+  line-height:1.6;font-weight:500;min-height:2.8em;margin-bottom:6px;letter-spacing:.02em;
+}
+#final-input-wrap{opacity:0;transition:opacity .6s ease}
+#final-input-wrap.show{opacity:1}
+#final-input{
+  width:100%;padding:15px 16px;border-radius:3px;border:1px solid var(--line);
+  background:#0a0a0d;color:var(--ink);font-size:16px;font-family:inherit;
+  text-align:center;letter-spacing:.12em;margin-bottom:16px;
+}
+#final-input:focus{outline:none;border-color:var(--blood);box-shadow:0 0 0 1px #e5383b40}
+#final-hint{color:var(--dim);font-size:12.5px;margin-top:14px}
+
+/* ---------- 记录管理页 ---------- */
+#admin-list{display:flex;flex-direction:column;gap:10px}
+.admin-item{
+  padding:12px 14px;border:1px solid var(--line);border-radius:3px;
+  background:#ffffff05;font-size:15px;color:#d8d3c9;word-break:break-all;
+}
+.admin-item span{color:var(--dim);font-size:12px}
+
+@media(max-width:420px){
+  .card{padding:22px 16px}
+  .row{flex-direction:column;gap:4px}
+  .row .k{flex:none}
+  .music-btn{top:10px;right:10px;width:38px;height:38px}
+  .portrait{width:150px;height:150px}
+}
+</style>
+</head>
+<body>
+
+<!-- 背景音乐 -->
+<audio id="bgm" loop preload="auto" autoplay>
+  <source src="bgm_test.mp3" type="audio/mpeg">
+</audio>
+<button class="music-btn" id="musicBtn" title="背景音乐">
+  <span class="pulse"></span>
+  <span id="musicIcon">♪</span>
+</button>
+
+<!-- 颜色变化 / 底部字幕 -->
+<div id="flash"></div>
+<div id="subtitle" aria-hidden="true">
+  <p id="subtitle-text"></p>
+</div>
+
+<div class="wrap">
+
+  <!-- ============ 锁定页 ============ -->
+  <section id="screen-lock" class="screen">
+    <div class="card lock" style="text-align:center;padding:50px 20px">
+      <div style="font-size:40px;margin-bottom:18px;filter:grayscale(1) brightness(.8)">🔒</div>
+      <h2 style="font-family:Georgia,serif;font-size:22px;margin-bottom:12px;font-weight:500">档案已封存</h2>
+      <p style="color:var(--dim);font-size:13.5px;max-width:380px;margin:0 auto 8px">这是一份不对外公开的私人卷宗。</p>
+      <p style="color:var(--dim);font-size:13.5px;max-width:380px;margin:0 auto 8px">请通过邀请链接进入，链接末尾需包含：</p>
+      <p style="margin-top:14px"><code style="background:#ffffff0a;border:1px solid var(--line);padding:2px 7px;border-radius:2px;font-family:ui-monospace,monospace;font-size:12px;color:var(--blood2)">?invite=dark-detective</code></p>
+    </div>
+  </section>
+
+  <!-- ============ 入口页 ============ -->
+  <section id="screen-intro" class="screen">
+    <div class="card">
+      <span class="stamp">CASE FILE · 内部卷宗</span>
+      <h1 class="title">测试你的<em>杀人狂</em>人格</h1>
+      <p class="subtitle">一份看似普通的人格调查。答到最后，它会认出你心里住着的那一个。</p>
+
+      <div class="meta">
+        <div>题量<b>35</b></div>
+        <div>结果<b>16</b></div>
+        <div>时长<b>≈6 min</b></div>
+      </div>
+
+      <div class="hr"></div>
+
+      <p class="disclaimer">
+        免责声明：本测试为虚构影视向趣味测试，所有类型均为影视反派原型，
+        仅供娱乐，<b>不构成任何心理诊断</b>，不鼓励、不美化任何现实暴力行为。
+        如你正在经历情绪困扰，请寻求专业帮助。
+      </p>
+
+      <div style="height:26px"></div>
+      <button class="btn" id="btn-start">开始调查</button>
+    </div>
+    <p class="footer">DARK DETECTIVE ARCHIVE · NO.016</p>
+  </section>
+
+  <!-- ============ 答题页 ============ -->
+  <section id="screen-quiz" class="screen">
+    <div class="card">
+      <div class="topbar">
+        <span class="mono" id="q-index">01 / 35</span>
+        <span class="mono" id="q-stage">取证中</span>
+      </div>
+      <div class="progress"><i id="q-bar"></i></div>
+      <h2 class="q-text" id="q-text"></h2>
+      <div class="options" id="q-options"></div>
+    </div>
+  </section>
+
+  <!-- ============ 最终开放题 ============ -->
+  <section id="screen-final" class="screen">
+    <div class="card" style="text-align:center">
+      <div class="mono" id="final-kicker">LAST QUESTION · 最后的问题</div>
+      <h2 class="q-text" id="final-text"></h2>
+      <div id="final-input-wrap">
+        <input id="final-input" type="text" maxlength="30" placeholder="写下那个名字…" autocomplete="off">
+        <button class="btn" id="final-submit" disabled>确认</button>
+        <p id="final-hint">按下确认后，才会看到你的鉴定结果。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 结果页 ============ -->
+  <section id="screen-result" class="screen">
+    <div class="card">
+      <div class="result-head">
+        <div class="portrait" id="r-portrait"></div>
+        <div class="result-kicker">FINAL REPORT</div>
+        <div class="result-name" id="r-name">—</div>
+        <div class="result-sub" id="r-sub">—</div>
+        <div class="duo" id="r-duo"></div>
+        <div class="matchbar">
+          <div class="lab">
+            <span class="mono">人格匹配度</span>
+            <span class="mono" id="r-pct" style="color:var(--blood2)">0%</span>
+          </div>
+          <div class="track"><i id="r-bar"></i></div>
+        </div>
+      </div>
+
+      <div class="tags" id="r-tags"></div>
+
+      <div class="rows">
+        <div class="row"><span class="k">核心驱动</span><span class="v" id="r-core"></span></div>
+        <div class="row"><span class="k">内心恐惧</span><span class="v" id="r-fear"></span></div>
+        <div class="row"><span class="k">行为风格</span><span class="v" id="r-style"></span></div>
+        <div class="row"><span class="k">影视原型</span><span class="v" id="r-arch"></span></div>
+        <div class="row"><span class="k">最后写下</span><span class="v" id="r-answer">（未填写）</span></div>
+      </div>
+
+      <blockquote id="r-quote"></blockquote>
+
+      <div class="analysis" id="r-analysis"></div>
+
+      <div class="share-box">
+        本卷宗为私密档案，不公开索引。<br>
+        分享给朋友时，请连同邀请参数一起发送：<br>
+        <code id="r-link">…</code>
+      </div>
+
+      <button class="btn" id="btn-retry">重新调查</button>
+      <button class="btn ghost" id="btn-home" style="margin-top:10px">返回首页</button>
+    </div>
+    <p class="footer">DARK DETECTIVE ARCHIVE · NO.016</p>
+  </section>
+
+  <!-- ============ 记录管理页（?admin=1） ============ -->
+  <section id="screen-admin" class="screen">
+    <div class="card">
+      <span class="stamp">ANSWER LOG · 回答记录</span>
+      <h2 style="font-family:Georgia,serif;font-size:20px;margin-bottom:8px;font-weight:500">他们写下的名字</h2>
+      <p style="color:var(--dim);font-size:12.5px;margin-bottom:18px">记录保存在本浏览器中（本机可见）。</p>
+      <div id="admin-list"></div>
+      <div style="height:20px"></div>
+      <button class="btn ghost" id="admin-back">返回</button>
+    </div>
+  </section>
+
+</div>
+
+<script>
+/* =========================================================
+   0. 配置
+   ========================================================= */
+const INVITE_CODE   = 'dark-detective';
+const REQUIRE_INVITE = false;   // ★ 方便分享，先关掉邀请锁
+const ADMIN_PARAM   = '1';      // 用 ?admin=1 查看本机回答记录
+const FORMSPREE_ENDPOINT = 'https://formspree.io/f/xbgdoeve'; // ★ 回答会发到这里（邮箱）
+
+/* =========================================================
+   1. 16 种人格结果（解析已扩写、更具体）
+   ========================================================= */
+const RESULTS = {
+  S:{ name:'稻草人', subtitle:'恐惧投射者', color:'#8B0000',
+    keywords:['面具','乌鸦','心理战','田野'],
+    core:'把内心的恐惧，变成控制别人的工具。',
+    fear:'自己其实无力，所以先让别人害怕。',
+    style:'制造不安、隐喻、心理暗示，享受被注视。',
+    archetype:['田野','稻草','乌鸦','面具','恐吓信'],
+    quote:'“你害怕的不是我，是你自己。”',
+    analysis:[
+      '你几乎不需要动手，就能让一间房冷下来。你对“别人怕什么”有一种近乎本能的嗅觉——一个眼神、一句含糊的话、一次恰到好处的停顿，都能被你加工成让人后颈发凉的东西。你享受被注视，尤其是被带着几分不安地注视；那让你确认自己真实存在。',
+      '你的强大是一场需要观众的戏。灯亮的时候你游刃有余，可一旦人群散去、房间里只剩下你一个人，你会比谁都先发慌。你习惯把恐惧先穿在别人身上，因为你知道，等别人开始害怕的时候，你才能真正喘上一口气。',
+      '你最擅长的是暗示，而不是明说。你从不直接威胁，只会把一扇门半掩着，让对面的人自己想象门后有什么。人的想象力比任何刀都锋利，而你只是负责把它磨快。',
+      '深夜你常会反复回想某个眼神、某句没说完的话，然后把它们加工成更可怕的东西，再不动声色地投射出去。你不是不害怕，你是太害怕了，怕到必须让别人先怕你，才能抢回一点安全感。',
+      '给你的提醒：你不需要靠吓人来证明自己存在。真正让你安心的，从来不是别人眼里的恐惧，而是有一天你敢承认——“我也怕”，然后发现天并没有塌。'
+    ]},
+
+  H:{ name:'汉尼拔', subtitle:'优雅操控者', color:'#7a1f2b',
+    keywords:['礼仪','古典乐','晚餐','心理博弈'],
+    core:'用审美和礼貌，包装支配欲。',
+    fear:'失控、平庸、被粗鲁对待。',
+    style:'冷静、精致、话里有刀，永远比对方慢半拍开口。',
+    archetype:['高级晚餐','古典乐','手术般精准的谈吐'],
+    quote:'“礼貌是距离，也是刀。”',
+    analysis:[
+      '你相信品味就是权力。你不喜欢混乱，更不喜欢被人一眼看穿。你擅长在对话里不动声色地占据上风，让别人自愿走进你的节奏；你的危险感来自优雅，而不是吵闹——越客气，越让人不敢放松。',
+      '你从不提高音量，因为你知道安静的人开口时，别人才会真的去听。你会在餐桌上观察一个人怎么拿刀叉、怎么喝水、怎么在某个停顿里暴露自己。你把每一次交谈都当成一场没有彩排的演出，而你是唯一手握剧本的人。',
+      '你尤其厌恶“粗鲁”。对你来说，失控和失礼几乎是一种身体上的不适。可正因如此，你最大的弱点恰恰是“不体面”——一旦有人用最粗糙的方式戳破你精心维持的秩序，你会比谁都失态，只是你绝不会让任何人看见那一幕。',
+      '你把刀藏得很深，深到连自己都快忘了。礼貌是你的距离，也是你的武器；你用它靠近人，也用它隔开人。别人以为你是温柔，其实你只是在丈量，看谁值得你认真对待。',
+      '给你的提醒：优雅是壳，不是全部。允许自己在某些时刻不那么好看、不那么体面，你反而会变得更难被击穿——因为那时，你没有需要维护的假象。'
+    ]},
+
+  C:{ name:'收藏家', subtitle:'纪念品执念者', color:'#6b4a2f',
+    keywords:['旧物','档案','标本室','执念'],
+    core:'害怕遗忘，想保存人与时刻。',
+    fear:'失去、被遗忘、东西不在原位。',
+    style:'囤积、归档、怀旧、控制细节。',
+    archetype:['上锁抽屉','旧照片','标签','标本室'],
+    quote:'“你不是消失了，你只是属于我的档案。”',
+    analysis:[
+      '你重感情，但这份感情很容易滑向执念。你记得别人说过的话、送过的东西、离开的日期，甚至记得他们当时站在什么光线下。你看起来念旧，其实是在用“收藏”对抗失去——你舍不得扔的从来不是物品，而是“那一刻他还属于我”的证据。',
+      '你不是放不下东西，你是放不下那些东西代表的人。你会在某个失眠的夜里，把旧物一件件摆开，像在开一场只有你自己参加的追悼会。每一样东西都被你贴好了标签，因为你害怕，有一天连标签也救不了你的记忆。',
+      '你的温柔有一条清晰的边界：任何人都可以靠近，但不能动你的抽屉。那间上锁的标本室里，藏着你所有不肯放手的时刻；一旦有人想打开它，你会立刻变脸，温柔得像从来没有存在过。',
+      '你最大的恐惧，是有一天醒来，发现自己什么都记不清了。所以你拼命保存、拼命标注、拼命把时间钉在原地。可你越是想抓住，越觉得一切正在从指缝里漏走。',
+      '给你的提醒：真正的记得，不需要物证。有些人离开了，但你心里那间标本室，可以只留给还愿意留下的人——而不是用来困住已经走掉的人。'
+    ]},
+
+  L:{ name:'清道夫', subtitle:'无痕完美主义者', color:'#3f4a52',
+    keywords:['秩序','清洁','规则','密室'],
+    core:'消除混乱，让一切回到秩序。',
+    fear:'失控、肮脏、被看穿。',
+    style:'计划、整理、打扫、追求无痕。',
+    archetype:['消毒水','完美密室','整齐工具','一尘不染'],
+    quote:'“混乱才是罪。”',
+    analysis:[
+      '你靠秩序获得安全感。你不一定情绪外露，但对“不正确”的东西容忍度极低。你喜欢规则，也喜欢别人遵守你的规则；你不是没有情绪，只是把情绪也折好、放进了收纳盒，贴好标签，锁进柜子。',
+      '当世界开始失控时，你会先擦一遍桌子，再决定接下来怎么办。你会在凌晨三点把地板拖到反光，只因为白天有人进来时没有换鞋。你清理的不只是灰尘，更是那种“事情不在我掌控里”的窒息感。',
+      '你追求无痕。你讨厌留下把柄，讨厌任何可以被追溯的痕迹；你希望一切结束后，像什么都没发生过一样干净。这种洁癖，既是你的力量，也是你最大的自我欺骗。',
+      '你比谁都清楚，有些痕迹是擦不掉的——它们不在桌面上，而在你反复擦拭的那个动作里。你只是选择装作看不见，因为承认“擦不掉”这件事，比面对任何脏乱都更让你难受。',
+      '给你的提醒：世界本来就会乱，生活本来就会有痕迹。允许某一天不收拾、让某件事留一点瑕疵，天不会塌，你也不会因此失控。'
+    ]},
+
+  P:{ name:'傀儡师', subtitle:'提线操控者', color:'#4a2f6b',
+    keywords:['棋局','话术','提线','幕后'],
+    core:'让别人按你的剧本走。',
+    fear:'被忽视、没有影响力。',
+    style:'布局、离间、微笑、心理暗示。',
+    archetype:['心理医生','棋手','幕后黑手','温柔控制'],
+    quote:'“我没动手，是你自己走的。”',
+    analysis:[
+      '你享受影响力，不一定享受暴力。你更想看到别人因为你的存在而改变选择。你擅长说话，也擅长沉默；你的控制欲通常藏在“我为你好”里——等对方反应过来，线已经缠在了他的手腕上。',
+      '你最有成就感的时刻，是别人以为那是自己的主意。你会在两个人的对话里轻轻放下一句话，然后退到旁边，看它慢慢发酵。你从不逼人，你只是把选项摆好，让人自己走进你想要的那扇门。',
+      '你最舒服的位置是幕后。你不喜欢站在聚光灯下，因为被看见意味着被审判；你更喜欢坐在暗处，看别人替你完成你想要的结局，而你只需要在合适的时机，轻轻地拉一下线。',
+      '你最大的恐惧不是失败，而是有一天你发现，没有人再需要你给建议了。那种“不再被需要”的感觉，比任何背叛都更让你难熬。',
+      '给你的提醒：真正的自由，是允许别人不听你的。放下那根线，你并不会失去谁；而真正属于你的关系，从来不需要被操控。'
+    ]},
+
+  R:{ name:'仪式导演', subtitle:'象征舞台者', color:'#8a1c3d',
+    keywords:['舞台','面具','红幕','签名'],
+    core:'把行为变成故事和仪式。',
+    fear:'无意义、被忘记、没有观众。',
+    style:'讲究象征、日期、布景、剧本感。',
+    archetype:['舞台','红幕','面具','留签名','最后一幕'],
+    quote:'“没有仪式的恐惧，只是事故。”',
+    analysis:[
+      '你需要意义，也需要观众。你喜欢让事情“看起来像什么”，而不只是单纯发生。你的暗黑感来自审美与叙事——你希望别人记住你设计的场面，对你来说，最可怕的不是失败，而是没人鼓掌。',
+      '你会为一件小事准备一整个布景，因为过程本身就是你的作品。你会在心里给每一个重要时刻配好灯光、配乐和台词。你不是在生活，你是在导演，而你自己也常常分不清，哪一刻是真心，哪一刻是表演。',
+      '你迷恋象征、日期、签名和重复出现的意象。一个符号对你来说不是装饰，而是一整套可供解读的密码；你享受别人看不懂、又隐约觉得“哪里不对”的那种表情。',
+      '你最大的恐惧，是谢幕后空无一人的剧场。你害怕你精心搭建的一切，最后没有一个人记得，没有一个人回头。',
+      '给你的提醒：不是所有时刻都需要观众。有些事只为你自己发生，也很好；而最动人的戏，往往是不演给别人看的那一场。'
+    ]},
+
+  N:{ name:'双面邻居', subtitle:'潜伏伪装者', color:'#4f5a3f',
+    keywords:['普通','微笑','郊区','地下室'],
+    core:'普通，是最好的保护色。',
+    fear:'真实自我暴露。',
+    style:'温和、合群、压抑、突然爆发。',
+    archetype:['郊区','微笑','地下室','隔壁好人'],
+    quote:'“我只是隔壁那个好人。”',
+    analysis:[
+      '你看起来最正常，所以最容易被低估。你擅长融入人群，把强烈情绪压在平静的表面之下。你的反差感是最大的特点：平时越温和，爆发时越让人意外。',
+      '你最大的秘密不是做了什么，而是想过什么。你笑得越标准，内心越安静得可怕。你会在心里把某个人反复推演一百遍，表面上却依然递给他一杯温水。你不是虚伪，你只是太早就学会了：真实的样子，不会被喜欢。',
+      '你习惯把地下室的门锁好，再上楼微笑着和邻居打招呼。你清楚地知道，每个人都只看到你想让他们看到的那一面，而你最怕的，是有朝一日有人推开那扇门。',
+      '你压抑了太久，久到自己都开始相信“我本来就是这样温和”。直到某一天，一件小事成了最后一根稻草，你才会被自己吓一跳。',
+      '给你的提醒：被喜欢的前提，不是完美伪装，而是有人愿意接住真实的你。你可以让那扇门偶尔开一条缝，光不会杀死你。'
+    ]},
+
+  V:{ name:'复仇幽灵', subtitle:'旧账私刑者', color:'#a4161a',
+    keywords:['名单','雨夜','旧照片','公平'],
+    core:'伤害必须偿还。',
+    fear:'不公被遗忘。',
+    style:'记仇、隐忍、追踪、爆发。',
+    archetype:['雨夜','旧照片','名单','复仇倒计时'],
+    quote:'“我不是杀人狂，我只是收账。”',
+    analysis:[
+      '你的正义感很强，但很容易变成偏执。你记得每一次不公平，也相信迟早要有人付出代价。你看起来冷静，其实内心有一张很长的名单；你不急，因为你相信时间站在你这边。',
+      '别人以为你早就翻篇了，只有你知道，你只是还没翻到那一页。你会在雨天想起某个人，在某个似曾相识的街角停下脚步，然后继续走。你不是放不下，你是不肯让那些伤害就这么算了。',
+      '你信奉“公平必须偿还”。可你心里也清楚，你想要的公平，和你真正会动手去讨的“债”，往往并不是同一件事。复仇走到后来，常常变成了对自己的惩罚。',
+      '你最大的恐惧，是有一天你发现自己恨的那个人已经过得很好，而你还在原地。那一刻，你会比任何时候都更恨——也更孤独。',
+      '给你的提醒：复仇是一条很长的路，走得太久，你会忘记出发时自己的样子。放下不等于原谅，只是把属于你的时间，还给你自己。'
+    ]},
+
+  M:{ name:'镜中人', subtitle:'身份模仿者', color:'#5a5a6b',
+    keywords:['镜子','模仿','口音','替身'],
+    core:'通过模仿别人，来获得存在感。',
+    fear:'没有固定自我、被识破。',
+    style:'观察、复制、切换人格、适应环境。',
+    archetype:['镜子','替身','口音','假身份'],
+    quote:'“我不是他，但我可以比他更像他。”',
+    analysis:[
+      '你擅长变成别人需要的样子。你观察细节，模仿语气、习惯和反应。你未必想伤害谁，但你害怕摘下面具后，里面什么都没有。照镜子时，你偶尔需要想一下：今天我是谁。',
+      '你最擅长的不是伪装，是让所有人都以为那就是你。你会在不同的房间里切换不同的声音，回到家后却不知道该用哪一种。你不是没有自己，你只是把“自己”放在了太多地方，收不回来。',
+      '你靠别人的反馈确认自己存在。可这种确认很脆弱：一旦没人看着你，你就开始怀疑自己是不是真的在那里。镜子里的人越来越多，你反而越来越分不清哪一个是你。',
+      '你最大的恐惧，是有一天有人对你说“我知道你是谁”，而你自己却答不上来。那会是你最漫长的一秒。',
+      '给你的提醒：你不需要成为谁，才值得存在。镜子里的那个人，本来就可以只是你；而真实的你，比任何模仿都更经得起看。'
+    ]},
+
+  A:{ name:'建筑师', subtitle:'陷阱机关师', color:'#2f5a6b',
+    keywords:['蓝图','齿轮','密室','结构'],
+    core:'用设计感控制局面。',
+    fear:'计划出现漏洞。',
+    style:'提前布置、计算路线、喜欢闭环。',
+    archetype:['蓝图','机关','密室','精密结构'],
+    quote:'“你不是掉进来的，你是被引导进来的。”',
+    analysis:[
+      '你相信最好的控制不是追，而是让事情自己发生。你喜欢蓝图、结构和精密安排，享受别人在你设计好的路径里做选择，还以为那是自由意志。',
+      '你唯一的焦虑是：如果有一颗螺丝没拧紧呢？你会在脑子里把同一个场景排演几十遍，把所有可能的岔路都堵上。你不是控制狂，你只是不能忍受“本来可以更好”。',
+      '你迷恋闭环。一个完美的机关，应该让进入者以为每一步都是自己选的，却最终走到你早就铺好的出口。你享受的不是看别人落网，而是看他们一步步走向你以为他们会走向的地方。',
+      '你最大的恐惧，是有一天你精心设计的一切被人一眼看穿。那比任何失败都更让你难堪，因为那意味着，你不再是那个“看得最远的人”。',
+      '给你的提醒：不是所有事情都需要闭环。有些美好恰恰来自意外；给生活留一条没有设计过的路，你可能会走到自己都没想到的地方。'
+    ]},
+
+  G:{ name:'游戏庄家', subtitle:'规则博弈者', color:'#6b5a1f',
+    keywords:['骰子','牌局','规则','赌注'],
+    core:'把关系变成游戏，把别人变成玩家。',
+    fear:'无聊、失去掌控、没人陪你玩。',
+    style:'设局、试探、加码、看反应。',
+    archetype:['牌局','赌注','规则','心理博弈'],
+    quote:'“规则是我写的，但选择是你做的。”',
+    analysis:[
+      '你聪明、爱玩、喜欢心理博弈。你不一定暴力，但你享受看别人在压力下露出真面目。你最大的弱点是厌倦——一旦游戏不好玩了，你会亲手把它掀翻，哪怕代价是你自己。',
+      '你从不害怕输，你只害怕无趣。你会在最平静的对话里突然抛出一个试探，然后安静地看对方怎么接。你把人生当成一张牌桌，而你要的从来不是赢，是那种“牌翻开前”的心跳。',
+      '规则是你写的，但你从不明说。你享受别人在规则里挣扎、以为自己有选择的样子。可你偶尔也会忘记：庄家一旦下场，就再也不是旁观者了。',
+      '你最大的恐惧，是有一天你发现，自己也只是别人桌上的一张牌。那一刻，你精心维持的掌控感会碎得很彻底。',
+      '给你的提醒：不是所有关系都需要博弈。有些人本来就不该拿来赌；而真正的赢，是有人愿意不设规则地留在你身边。'
+    ]},
+
+  B:{ name:'野兽派', subtitle:'原始冲动者', color:'#8a3a10',
+    keywords:['本能','爆发','红色','直觉'],
+    core:'用最直接的方式释放情绪。',
+    fear:'被压抑、被命令、被当成软弱。',
+    style:'冲动、直接、突然、不按牌理。',
+    archetype:['本能','爆发','红色','失控边缘'],
+    quote:'“我想太多，所以我不想了。”',
+    analysis:[
+      '你平时可能很安静，但情绪积累到一定程度会突然爆发。你讨厌复杂话术，更相信本能和力量。你的危险感来自不可预测——连你自己都不确定，哪一句话会是最后一根稻草。',
+      '你不喜欢被命令，也不喜欢被当成软弱。别人的试探和挑衅，在别人眼里是玩笑，在你这里可能是导火索。你活得很真，也因此很容易受伤。',
+      '你的直觉很准，准到你自己都害怕。你常常还没想清楚为什么，身体已经先做出了反应；事后你才补上一套“合理”的解释。',
+      '你最大的恐惧，是某天你彻底松开缰绳，就再也收不回来了。你隐隐知道，那股力量一直都在，只是你平时用沉默把它压着。',
+      '给你的提醒：力量不需要用爆发来证明。学会在冲动来临前数三秒，你并不会变软弱，反而会变得真正不可阻挡。'
+    ]},
+
+  J:{ name:'小丑', subtitle:'混乱笑面者', color:'#7a2b4a',
+    keywords:['玩笑','狂欢','嘲弄','不可预测'],
+    core:'用笑拆解一切，包括恐惧。',
+    fear:'安静下来之后，只剩下自己。',
+    style:'荒诞、反讽、突然变脸、笑着下刀。',
+    archetype:['笑脸','马戏团','彩带','冷笑话'],
+    quote:'“怕吗？可我一直都在笑啊。”',
+    analysis:[
+      '你用笑来拆解一切，包括恐惧。别人害怕的时候，你想笑；别人认真的时候，你想看他们崩掉。你觉得世界本身就是一场不好笑的玩笑，所以你要亲自把它演出来。',
+      '你最大的武器是不可预测。没人知道你的下一句话是真心还是嘲弄，是拥抱还是一刀。你享受这种“让人猜不透”的感觉，因为那是你少数能掌控的东西。',
+      '你其实很怕安静下来。人群一散、笑声一停，你就会听见自己的心跳声，那声音比任何笑话都更难熬。你笑，是因为你不敢不笑。',
+      '你擅长把最残忍的事说得像玩笑，也把最温柔的话说得像威胁。久而久之，连你自己都分不清，哪个才是真的你。',
+      '给你的提醒：你不用一直搞笑，也不用一直带刺。允许自己有一次不笑的、真诚的时刻，那个不设防的你，其实没那么可怕。'
+    ]},
+
+  D:{ name:'梦魇', subtitle:'睡眠潜伏者', color:'#3b2f5a',
+    keywords:['梦境','失眠','低语','影子'],
+    core:'把潜意识里的恐惧，带进现实。',
+    fear:'分不清梦与醒。',
+    style:'恍惚、敏锐、沉溺想象、半梦半醒。',
+    archetype:['长廊','闹钟','床底','重复的梦'],
+    quote:'“你醒着，可你确定吗？”',
+    analysis:[
+      '你熟悉黑暗，尤其是闭上眼睛之后的那种。梦对你来说不是休息，而是一间你每晚都要回去的屋子。你记得很多梦，却分不清哪些是梦，哪些是曾经真的发生过。',
+      '你比谁都了解潜意识的形状：它不在白天说话，只在深夜低语。你常在半梦半醒间听见自己的名字，然后发现房间里只有你一个人。',
+      '你害怕睡着，又害怕醒着。睡着意味着你无法控制那个世界，醒着意味着你必须面对这个。你在两种恐惧之间反复横跳，像一只永远找不到出口的蛾子。',
+      '你有一种能力：把恐惧具象化。你会在白天突然想起梦里某个画面，然后一整天都被它缠着。你不是在做噩梦，你是在把梦带进现实。',
+      '给你的提醒：梦再可怕，也是你的一部分。试着在睡前给自己留一盏小灯，不是照亮黑暗，而是提醒自己——醒来的地方，才是真实的。'
+    ]},
+
+  K:{ name:'验尸官', subtitle:'死亡解剖者', color:'#4a5a52',
+    keywords:['手术刀','真相','冷静','解剖'],
+    core:'把一切拆开、摊平，直到看清真相。',
+    fear:'没有答案、死因不明。',
+    style:'克制、精准、沉默观察、直取本质。',
+    archetype:['白大褂','手术刀','尸检报告','解剖台'],
+    quote:'“别怕，我只是想看看里面是什么。”',
+    analysis:[
+      '你对“真相”有一种冷静到近乎冷酷的执着。你不怕面对别人不敢看的东西；相反，你越靠近腐烂和伤口，越能保持清醒。别人慌的时候，你反而最像自己。',
+      '你擅长把情绪和事实分开。你相信，只有把一切拆开、摊平、看清，才能真正理解发生了什么。你手里那把手术刀，割开的从来不是别人，而是你想看穿的谜。',
+      '你的温柔很罕见，也很彻底：你见过太多被藏起来的东西，所以当你想对一个人好的时候，会比谁都认真。可大多数时候，你只是沉默地站在一旁，观察，记录。',
+      '你最大的恐惧，不是死亡本身，而是“没有答案”。你无法忍受一件事就这么不明不白地结束，就像一具再也查不出死因的尸体。',
+      '给你的提醒：不是所有问题都需要剖开来看。有些真相，知道了也不会让谁更好过；允许一些谜留在那里，你反而能睡个好觉。'
+    ]},
+
+  W:{ name:'守夜人', subtitle:'黑暗守望者', color:'#2f3a5a',
+    keywords:['窥视','记录','暗处','守望'],
+    core:'站在暗处，看穿一切却从不开口。',
+    fear:'被看见、被迫走进光里。',
+    style:'沉默、存档、观察、克制的掌控。',
+    archetype:['监控室','手电','值班表','窗边'],
+    quote:'“我什么都知道，但我什么都没说。”',
+    analysis:[
+      '你习惯站在暗处看，而不是走进光里。你观察、记录、存档，比谁都更早知道发生了什么，却从不第一个开口。你觉得沉默是一种位置，一种安全，也是一种权力。',
+      '你享受“别人不知道你在看”的感觉。你熟悉深夜的城市、熟悉每一个人的习惯和路线；这些碎片在你心里拼成了一幅只有你看得见的地图。',
+      '你最大的矛盾是：你渴望被需要，又害怕被看见。你想做那个在背后守护一切的人，却不愿承认，有时候你只是在借“守望”来逃避真正走进一段关系。',
+      '你记得很多别人已经忘记的事。你是那本被搁在角落、落满灰的记事本，记着所有人的秘密，唯独没有写过自己的。',
+      '给你的提醒：你可以从暗处走出来，光不会刺伤你。真正被记住的人，不是只看不说的那一个，而是愿意让别人也看见他的那一个。'
+    ]}
+};
+
+/* =========================================================
+   2. 形象图（内联 SVG，每种人格一张）
+   ========================================================= */
+function svgPortrait(key, color, inner) {
+  return '<svg viewBox="0 0 260 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="'+key+'">' +
+    '<defs><radialGradient id="pg'+key+'" cx="50%" cy="38%" r="78%">' +
+    '<stop offset="0%" stop-color="'+color+'"/><stop offset="55%" stop-color="#1a0b0e"/><stop offset="100%" stop-color="#0a0a0d"/>' +
+    '</radialGradient></defs>' +
+    '<rect width="260" height="260" fill="url(#pg'+key+')"/>' +
+    '<circle cx="130" cy="130" r="86" fill="'+color+'" opacity=".14"/>' +
+    '<circle cx="130" cy="130" r="112" fill="none" stroke="'+color+'" stroke-opacity=".4"/>' +
+    '<g fill="none" stroke="#e6e1d7" stroke-opacity=".92" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">' + inner + '</g>' +
+    '</svg>';
+}
+const PORTRAITS = {
+  S: svgPortrait('S','#8B0000','<circle cx="130" cy="62" r="20"/><path d="M123 56 l14 12 M137 56 l-14 12"/><line x1="130" y1="82" x2="130" y2="196"/><line x1="86" y1="106" x2="174" y2="106"/><path d="M98 32 l-12 -8 M162 32 l12 -8"/>'),
+  H: svgPortrait('H','#7a1f2b','<path d="M112 68 C 98 86 98 108 112 122 L 148 122 C 162 108 162 86 148 68"/><line x1="130" y1="122" x2="130" y2="182"/><line x1="112" y1="182" x2="148" y2="182"/><path d="M130 42 c 6 0 10 4 10 9 c 0 6 -10 15 -10 15 c 0 0 -10 -9 -10 -15 c 0 -5 4 -9 10 -9 z" fill="#e5383b" stroke="none" opacity=".85"/>'),
+  C: svgPortrait('C','#6b4a2f','<rect x="98" y="68" width="64" height="94" rx="8"/><line x1="92" y1="68" x2="168" y2="68"/><line x1="92" y1="60" x2="168" y2="60"/><path d="M130 118 l-13 -7 l13 11 z M130 118 l13 -7 l-13 11 z" fill="#e5383b" stroke="none" opacity=".8"/><line x1="130" y1="118" x2="130" y2="126"/>'),
+  L: svgPortrait('L','#3f4a52','<circle cx="130" cy="130" r="76" opacity=".7"/><circle cx="130" cy="130" r="50" opacity=".45"/><circle cx="130" cy="130" r="26"/><path d="M130 90 l3 8 8 3 -8 3 -3 8 -3 -8 -8 -3 8 -3 z" fill="#e6e1d7" stroke="none"/>'),
+  P: svgPortrait('P','#4a2f6b','<line x1="86" y1="72" x2="174" y2="72"/><line x1="130" y1="58" x2="130" y2="110"/><circle cx="130" cy="58" r="5"/><line x1="86" y1="72" x2="108" y2="148"/><line x1="174" y1="72" x2="152" y2="148"/><line x1="130" y1="110" x2="130" y2="148"/><circle cx="130" cy="152" r="12"/><line x1="130" y1="164" x2="130" y2="188"/><line x1="130" y1="172" x2="116" y2="184"/><line x1="130" y1="172" x2="144" y2="184"/><line x1="130" y1="188" x2="116" y2="202"/><line x1="130" y1="188" x2="144" y2="202"/>'),
+  R: svgPortrait('R','#8a1c3d','<path d="M70 72 q30 -20 60 0 q30 -20 60 0"/><path d="M70 86 q30 -16 60 0 q30 -16 60 0" opacity=".5"/><path d="M108 106 C 108 98 116 94 122 98 C 128 102 132 102 138 98 C 144 94 152 98 152 106 L 152 132 C 152 148 108 148 108 132 Z"/><path d="M116 116 q6 -6 12 0 M132 116 q6 -6 12 0"/><path d="M122 136 q8 8 16 0"/>'),
+  N: svgPortrait('N','#4f5a3f','<path d="M130 64 L 176 100 L 84 100 Z"/><rect x="92" y="100" width="76" height="70"/><rect x="100" y="110" width="22" height="22"/><rect x="122" y="134" width="16" height="36"/><rect x="92" y="170" width="76" height="28" opacity=".5"/>'),
+  V: svgPortrait('V','#a4161a','<rect x="100" y="86" width="60" height="70"/><circle cx="130" cy="118" r="15"/><path d="M118 118 l5 0 M137 118 l5 0"/><path d="M124 126 q6 6 12 0"/><line x1="84" y1="78" x2="74" y2="98"/><line x1="176" y1="78" x2="186" y2="98"/><line x1="90" y1="124" x2="80" y2="144"/><line x1="170" y1="124" x2="180" y2="144"/>'),
+  M: svgPortrait('M','#5a5a6b','<ellipse cx="130" cy="130" rx="64" ry="80"/><ellipse cx="130" cy="130" rx="50" ry="66" opacity=".35"/><path d="M130 62 L 118 92 L 132 110 L 124 138 L 130 198"/><path d="M112 122 q18 -14 36 0" opacity=".55"/>'),
+  A: svgPortrait('A','#2f5a6b','<circle cx="130" cy="112" r="38"/><circle cx="130" cy="112" r="12"/><line x1="130" y1="64" x2="130" y2="76"/><line x1="130" y1="148" x2="130" y2="160"/><line x1="82" y1="112" x2="94" y2="112"/><line x1="166" y1="112" x2="178" y2="112"/><line x1="96" y1="78" x2="104" y2="86"/><line x1="156" y1="138" x2="164" y2="146"/><line x1="164" y1="78" x2="156" y2="86"/><line x1="104" y1="138" x2="96" y2="146"/><path d="M90 186 h80 M90 200 h80" opacity=".4"/>'),
+  G: svgPortrait('G','#6b5a1f','<rect x="86" y="86" width="44" height="44" rx="8"/><circle cx="100" cy="100" r="3" fill="#e6e1d7" stroke="none"/><circle cx="116" cy="116" r="3" fill="#e6e1d7" stroke="none"/><rect x="130" y="120" width="44" height="44" rx="8"/><circle cx="144" cy="134" r="3" fill="#e6e1d7" stroke="none"/><circle cx="160" cy="150" r="3" fill="#e6e1d7" stroke="none"/><rect x="96" y="148" width="68" height="36" rx="4" opacity=".45"/>'),
+  B: svgPortrait('B','#8a3a10','<path d="M88 84 l66 66"/><path d="M110 70 l72 72" stroke-width="5"/><path d="M70 106 l74 74"/>'),
+  J: svgPortrait('J','#7a2b4a','<path d="M108 68 L 130 44 L 152 68"/><circle cx="130" cy="74" r="4" fill="#e6e1d7" stroke="none"/><path d="M106 98 l12 12 l-12 12 M154 98 l-12 12 l12 12"/><path d="M94 132 Q 130 174 166 132"/><path d="M94 132 Q 130 150 166 132" opacity=".4"/>'),
+  D: svgPortrait('D','#3b2f5a','<path d="M152 68 a66 66 0 1 0 0 124 a54 54 0 1 1 0 -124 z" fill="#e6e1d7" stroke="none" opacity=".9"/><ellipse cx="130" cy="190" rx="26" ry="12"/><circle cx="130" cy="190" r="5" fill="#e6e1d7" stroke="none"/>'),
+  K: svgPortrait('K','#4a5a52','<path d="M118 66 L 142 66 L 136 116 L 124 116 Z" fill="#e6e1d7" stroke="none" opacity=".85"/><line x1="130" y1="116" x2="130" y2="194"/><line x1="118" y1="150" x2="142" y2="150" opacity=".5"/><path d="M86 140 l10 -6 l10 6 l10 -6 l10 6" opacity=".6"/>'),
+  W: svgPortrait('W','#2f3a5a','<path d="M82 130 Q130 94 178 130 Q130 166 82 130 Z"/><circle cx="130" cy="130" r="12"/><circle cx="130" cy="130" r="4" fill="#e6e1d7" stroke="none"/><path d="M130 130 L 178 82" opacity=".4"/>')
+};
+
+/* =========================================================
+   3. 35 道题目（微恐 / 诡谲，选项 A-D 分别指向一种人格）
+   ========================================================= */
+const QUESTIONS = [
+  { q:'深夜，楼道里传来缓慢、均匀的脚步声，停在了你门外。你第一反应是？', o:[
+    ['记下这个时间，像记下一笔还没还的账。','V'],
+    ['打开门，礼貌地问一句：请问找谁？','H'],
+    ['屏住呼吸，假装家里没有人。','N'],
+    ['先想好三条退路，和一件趁手的东西。','A']
+  ]},
+  { q:'你独处时，会不自觉地做哪个小动作？', o:[
+    ['把东西一一摆回固定的位置。','L'],
+    ['翻看旧物，整理那些舍不得扔的纪念。','C'],
+    ['对着镜子练习表情和语气。','M'],
+    ['反复回想昨晚那个梦。','D']
+  ]},
+  { q:'有人在聚会上，把你最难堪的秘密讲了出来。你会？', o:[
+    ['微笑着记下，等时机成熟再回敬。','P'],
+    ['不动声色，把他放进心里那张名单。','V'],
+    ['当场用一个更狠的笑话反杀回去。','J'],
+    ['把它当成一枚筹码，留着以后谈条件。','G']
+  ]},
+  { q:'你如何看待“规则”？', o:[
+    ['规则是一套精密的机关，一环扣一环。','A'],
+    ['规则是用来被理解和利用的。','G'],
+    ['规则是别人的事，我只信自己的直觉。','B'],
+    ['规则是舞台的一部分，可以重写。','R']
+  ]},
+  { q:'深夜失眠时，你最容易想到什么？', o:[
+    ['某个反复出现、甩不掉的梦。','D'],
+    ['某个亏欠过你、却还没还的人。','V'],
+    ['一个再也回不来的时刻。','C'],
+    ['别人害怕你的那个样子。','S']
+  ]},
+  { q:'你更喜欢待在什么样的地方？', o:[
+    ['开阔、没有遮挡、随时能行动的地方。','B'],
+    ['舞台中央，灯光最亮的位置。','R'],
+    ['一间按你设计布置好的房间。','A'],
+    ['别人的位置，试着用他们的视角看世界。','M']
+  ]},
+  { q:'当你发现有人正在观察你，你会？', o:[
+    ['假装没察觉，继续优雅地做手头的事。','H'],
+    ['反过来凝视他，直到他先移开眼睛。','S'],
+    ['维持微笑，装作一切如常。','N'],
+    ['冷静地分析他观察你的目的。','K']
+  ]},
+  { q:'你更相信哪一种力量？', o:[
+    ['看不见的影响力。','P'],
+    ['本能的、压倒性的爆发。','B'],
+    ['笑，以及它带来的混乱。','J'],
+    ['规则和筹码。','G']
+  ]},
+  { q:'面对一场告别，你通常会？', o:[
+    ['把和那个人有关的东西全部收好。','C'],
+    ['记住这一切，然后等着时间偿还。','V'],
+    ['清理干净，当这件事没发生过。','L'],
+    ['在梦里，一次次回到告别之前。','D']
+  ]},
+  { q:'你理想中的“完美作品”，更像是什么？', o:[
+    ['一场让人多年后仍记得的演出。','R'],
+    ['一个没有任何漏洞的机关。','A'],
+    ['一具被彻底看穿的真相。','K'],
+    ['一个让人不敢靠近的传说。','S']
+  ]},
+  { q:'如果有人当面骗你，你会？', o:[
+    ['不揭穿，继续用问题套他的话。','H'],
+    ['不动声色地模仿他的说辞，看他慌不慌。','M'],
+    ['把它当成一局游戏，慢慢加码。','G'],
+    ['记下所有细节，等它自己露出破绽。','W']
+  ]},
+  { q:'你觉得自己最像什么？', o:[
+    ['隔壁那个总是微笑的普通人。','N'],
+    ['一头被拴住的野兽。','B'],
+    ['一个戴着小丑面具的谜。','J'],
+    ['一个醒在梦里的影子。','D']
+  ]},
+  { q:'独处时，你最享受做什么？', o:[
+    ['把一切都整理得一尘不染。','L'],
+    ['翻看自己的收藏，给旧物重新编号。','C'],
+    ['在窗边看外面的人来来去去。','W'],
+    ['研究一件别人不愿面对的事。','K']
+  ]},
+  { q:'你如何看待“被别人需要”？', o:[
+    ['那是我影响力的体现。','P'],
+    ['被需要，说明我值得被仰望。','H'],
+    ['说明我的伪装足够成功，没人看穿。','N'],
+    ['我会变成他们需要的样子。','M']
+  ]},
+  { q:'你最容易在什么时候失控？', o:[
+    ['被反复挑衅到极点的时候。','B'],
+    ['看到伤害过我的人过得很好。','V'],
+    ['所有人都不再笑、不再看我的时候。','J'],
+    ['连续几晚做同一个噩梦的时候。','D']
+  ]},
+  { q:'你对“爱”的理解，最接近哪一种？', o:[
+    ['是收藏、保存，以及不愿放手。','C'],
+    ['是一场需要精心排演的仪式。','R'],
+    ['是藏起真实的自己，只给最好的一面。','N'],
+    ['是一座为对方设计好的房子。','A']
+  ]},
+  { q:'如果必须选择一种“武器”，你会选？', o:[
+    ['恐惧本身。','S'],
+    ['恰到好处的语言。','H'],
+    ['一套没人能逃出的规则。','G'],
+    ['看清一切的冷静。','K']
+  ]},
+  { q:'你更习惯怎样的姿态？', o:[
+    ['端正、整洁、有分寸。','L'],
+    ['优雅、从容、不慌不忙。','H'],
+    ['放松、直接、随时准备行动。','B'],
+    ['贴着墙、靠边走，不引人注意。','W']
+  ]},
+  { q:'你如何看待“秘密”？', o:[
+    ['是必须藏好的东西。','N'],
+    ['是可以被模仿、被替换的身份。','M'],
+    ['是值得收藏的纪念。','C'],
+    ['是只有我知道的真相。','W']
+  ]},
+  { q:'你更喜欢哪一种“结束”？', o:[
+    ['谢幕时，全场起立鼓掌。','R'],
+    ['一切按计划完美闭环。','A'],
+    ['胜负揭晓的那一刻。','G'],
+    ['结束得干净、不留任何痕迹。','L']
+  ]},
+  { q:'当你想让一个人听你的话，你会？', o:[
+    ['把选项摆好，让他自己走进来。','P'],
+    ['用礼貌和逻辑，让他心悦诚服。','H'],
+    ['先让他怕你。','S'],
+    ['先变成他信任的样子。','M']
+  ]},
+  { q:'你记忆里最清晰的画面，通常是？', o:[
+    ['某个你把局面彻底掌控的瞬间。','P'],
+    ['某次被伤害的瞬间。','V'],
+    ['某个反复出现的梦。','D'],
+    ['某个被灯光照亮的时刻。','R']
+  ]},
+  { q:'你对“家”的感觉是？', o:[
+    ['一层给别人看，一层只有自己知道。','N'],
+    ['一个必须保持整洁有序的空间。','L'],
+    ['一座按我的设计运行的房子。','A'],
+    ['一个我可以躲在暗处的地方。','W']
+  ]},
+  { q:'你更喜欢哪一类故事？', o:[
+    ['冷峻的、抽丝剥茧的真相。','K'],
+    ['原始的、血与火的爆发。','B'],
+    ['荒诞的、笑着笑着就毛骨悚然的。','J'],
+    ['关于规则与赌局的博弈。','G']
+  ]},
+  { q:'你在人群里，通常扮演什么角色？', o:[
+    ['让人不敢靠近的那个。','S'],
+    ['站在中心、被注视的那个。','R'],
+    ['最不起眼、最合群的那个。','N'],
+    ['待在角落、安静观察的那个。','W']
+  ]},
+  { q:'你更害怕什么？', o:[
+    ['失控与失礼。','H'],
+    ['混乱与不干净。','L'],
+    ['找不到真实的自己。','M'],
+    ['没有答案。','K']
+  ]},
+  { q:'面对一段想放又放不下的关系，你会？', o:[
+    ['把和它有关的东西全部收起来。','C'],
+    ['记在心里，等一个结果。','V'],
+    ['暗中维持影响力，不彻底断开。','P'],
+    ['在梦里反复回到那个人身边。','D']
+  ]},
+  { q:'你认为“强大”最像什么？', o:[
+    ['压倒性的本能与力量。','B'],
+    ['让别人恐惧的能力。','S'],
+    ['提前布好一切的能力。','A'],
+    ['掌控规则的能力。','G']
+  ]},
+  { q:'你独处时，会不自觉地？', o:[
+    ['模仿某个刚认识的人的表情。','M'],
+    ['把东西重新摆正。','L'],
+    ['在脑子里重播某个被伤害的瞬间。','V'],
+    ['对着空气讲冷笑话。','J']
+  ]},
+  { q:'如果给你一个属于自己的“房间”，你希望它是？', o:[
+    ['一个可以随时搭景的舞台。','R'],
+    ['一间布满机关的密室。','A'],
+    ['一间藏着地下室的普通屋子。','N'],
+    ['一间摆满收藏的标本室。','C']
+  ]},
+  { q:'你对“时间”的感觉是？', o:[
+    ['时间是站在我这边讨债的。','V'],
+    ['时间是我用来布局的。','P'],
+    ['时间在梦里会扭曲变形。','D'],
+    ['时间是我用来观察别人的。','W']
+  ]},
+  { q:'你最享受别人对你说哪句话？', o:[
+    ['“我有点怕你。”','S'],
+    ['“你让我看不透。”','H'],
+    ['“我都听你的。”','P'],
+    ['“那场面，我到现在都忘不掉。”','R']
+  ]},
+  { q:'你更相信什么？', o:[
+    ['拆开之后才能看见的真相。','K'],
+    ['身体最诚实的本能。','B'],
+    ['笑底下藏着的东西。','J'],
+    ['不断切换才安全。','M']
+  ]},
+  { q:'你独处时，房间通常是？', o:[
+    ['一尘不染、井井有条。','L'],
+    ['摆满旧物与纪念。','C'],
+    ['只开一盏小灯，光线很暗。','W'],
+    ['窗帘紧闭，像一直没睡醒。','D']
+  ]},
+  { q:'最后一个问题：此刻，你怕了吗？', o:[
+    ['怕。但我会把这份怕，还给你。','S'],
+    ['怕？我早就在笑了。','J'],
+    ['我只好奇，真相是什么。','K'],
+    ['我更想，和你继续玩下去。','G']
+  ]}
+];
+
+/* =========================================================
+   4. 答题中途的反馈（底部字幕）
+   ========================================================= */
+const FEEDBACK = [
+  { at: 2,  text:'你回答得很快。快，通常意味着——你早就知道答案。' },
+  { at: 6,  text:'记录中。别担心，它只是想知道：你更常站在门的哪一边。' },
+  { at: 11, text:'你的选择开始趋近某种模式。继续，它快认出你了。' },
+  { at: 17, text:'已经过了半程。你有没有发现，屏幕比刚才更红了？' },
+  { at: 24, text:'它越来越近了。你选得越快，它认得越准。' },
+  { at: 30, text:'最后几题了。你现在可以停下。但它不会。' }
+];
+
+/* =========================================================
+   5. 交互逻辑
+   ========================================================= */
+function showScreen(screenId) {
+  document.querySelectorAll('.screen').forEach(screen => {
+    screen.classList.remove('active');
+  });
+  document.getElementById(screenId).classList.add('active');
+}
+
+let current = 0;
+let answers = [];
+let finalAnswer = '';
+
+/* 颜色渐变：随答题进度由暗夜红 → 深血红 */
+function mixHex(a, b, t) {
+  const pa = [1, 3, 5].map(i => parseInt(a.slice(i, i + 2), 16));
+  const pb = [1, 3, 5].map(i => parseInt(b.slice(i, i + 2), 16));
+  const c = pa.map((v, i) => Math.round(v + (pb[i] - v) * t));
+  return '#' + c.map(v => v.toString(16).padStart(2, '0')).join('');
+}
+function updateMood() {
+  const t = Math.min(1, current / QUESTIONS.length);
+  const root = document.documentElement.style;
+  root.setProperty('--bg',    mixHex('#08080a', '#150709', t));
+  root.setProperty('--glow1', mixHex('#1e0c10', '#401013', t));
+  root.setProperty('--glow2', mixHex('#15080b', '#2a0b0e', t));
+}
+
+/* 每次作答的红光一闪 */
+const flashEl = document.getElementById('flash');
+function flash() {
+  flashEl.style.transition = 'none';
+  flashEl.style.opacity = '.28';
+  requestAnimationFrame(() => {
+    flashEl.style.transition = 'opacity .6s ease';
+    flashEl.style.opacity = '0';
+  });
+}
+
+function stageText(i) {
+  const p = i / QUESTIONS.length;
+  if (p < 0.25) return '取证中';
+  if (p < 0.5)  return '侧写中';
+  if (p < 0.75) return '逼近真相';
+  return '最终鉴定';
+}
+
+function renderQuestion() {
+  const q = QUESTIONS[current];
+  document.getElementById('q-index').textContent =
+    String(current + 1).padStart(2, '0') + ' / ' + QUESTIONS.length;
+  document.getElementById('q-stage').textContent = stageText(current);
+  document.getElementById('q-bar').style.width =
+    (current / QUESTIONS.length * 100) + '%';
+  document.getElementById('q-text').textContent = q.q;
+
+  const box = document.getElementById('q-options');
+  box.innerHTML = '';
+  const keys = ['A', 'B', 'C', 'D'];
+  q.o.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'opt';
+    const key = document.createElement('span');
+    key.className = 'opt-key';
+    key.textContent = keys[i];
+    const txt = document.createElement('span');
+    txt.textContent = opt[0];
+    btn.appendChild(key);
+    btn.appendChild(txt);
+    btn.addEventListener('click', () => select(i));
+    box.appendChild(btn);
+  });
+}
+
+function select(i) {
+  answers[current] = QUESTIONS[current].o[i][1];
+  flash();
+  const answered = current;
+  current++;
+  updateMood();
+  const fb = FEEDBACK.find(f => f.at === answered);
+  if (fb) {
+    showSubtitle(fb.text, advance);
+  } else {
+    advance();
+  }
+}
+
+function advance() {
+  if (current >= QUESTIONS.length) {
+    showFinalQuestion();
+  } else {
+    renderQuestion();
+  }
+}
+
+/* 底部打字机字幕：逐字浮现，点击可跳过 */
+function showSubtitle(text, cb) {
+  const bar = document.getElementById('subtitle');
+  const el = document.getElementById('subtitle-text');
+  let i = 0;
+  let finished = false;
+  let timer = null;
+  const speed = 36;
+
+  function finish() {
+    if (finished) return;
+    finished = true;
+    clearTimeout(timer);
+    el.textContent = text;
+    setTimeout(() => {
+      bar.classList.remove('show');
+      bar.setAttribute('aria-hidden', 'true');
+      cb();
+    }, 700);
+  }
+
+  function tick() {
+    if (finished) return;
+    i++;
+    el.textContent = text.slice(0, i);
+    const caret = document.createElement('span');
+    caret.className = 'caret';
+    el.appendChild(caret);
+    if (i < text.length) {
+      timer = setTimeout(tick, speed);
+    } else {
+      el.textContent = text;
+      finish();
+    }
+  }
+
+  el.textContent = '';
+  bar.classList.add('show');
+  bar.setAttribute('aria-hidden', 'false');
+  bar.onclick = finish;
+  timer = setTimeout(tick, speed);
+}
+
+/* 最终开放题：缓缓打出问题 → 输入 → 记录 → 出结果 */
+function showFinalQuestion() {
+  showScreen('screen-final');
+  document.getElementById('final-input-wrap').classList.remove('show');
+  document.getElementById('final-input').value = '';
+  document.getElementById('final-submit').disabled = true;
+  typeFinalQuestion();
+}
+
+function typeFinalQuestion() {
+  const text = '你现在最想杀的是.....谁？';
+  const el = document.getElementById('final-text');
+  let i = 0;
+  const speed = 120;
+  el.textContent = '';
+  function tick() {
+    i++;
+    el.textContent = text.slice(0, i);
+    if (i < text.length) {
+      setTimeout(tick, speed);
+    } else {
+      document.getElementById('final-input-wrap').classList.add('show');
+      document.getElementById('final-input').focus();
+    }
+  }
+  setTimeout(tick, speed);
+}
+
+function recordAnswer(a) {
+  try {
+    const key = 'dsh_final_answers';
+    const arr = JSON.parse(localStorage.getItem(key) || '[]');
+    arr.push({ t: new Date().toISOString(), a: a });
+    localStorage.setItem(key, JSON.stringify(arr));
+  } catch (e) {}
+}
+
+function submitToFormspree(answer, result) {
+  fetch(FORMSPREE_ENDPOINT, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+    body: JSON.stringify({
+      answer: answer,
+      result: result,
+      _subject: '杀人狂人格测试 · 新回答'
+    })
+  }).catch(() => {});
+}
+
+function showAdmin() {
+  const list = document.getElementById('admin-list');
+  const key = 'dsh_final_answers';
+  let arr = [];
+  try { arr = JSON.parse(localStorage.getItem(key) || '[]'); } catch (e) {}
+  list.innerHTML = '';
+  if (!arr.length) {
+    list.innerHTML = '<p style="color:var(--dim)">暂无记录。等朋友填完后，再回到这里查看（同一台设备）。</p>';
+  } else {
+    arr.slice().reverse().forEach(r => {
+      const item = document.createElement('div');
+      item.className = 'admin-item';
+      const name = document.createElement('b');
+      name.textContent = r.a;
+      const time = document.createElement('span');
+      time.textContent = '　·　' + new Date(r.t).toLocaleString('zh-CN');
+      item.appendChild(name);
+      item.appendChild(time);
+      list.appendChild(item);
+    });
+  }
+  showScreen('screen-admin');
+}
+
+function finish() {
+  const score = {}, appear = {};
+  QUESTIONS.forEach((q, idx) => {
+    const t = answers[idx];
+    score[t] = (score[t] || 0) + 1;
+    q.o.forEach(opt => { appear[opt[1]] = (appear[opt[1]] || 0) + 1; });
+  });
+
+  const sorted = Object.keys(score).sort((a, b) => score[b] - score[a]);
+  const top = sorted[0];
+  const second = sorted[1];
+  const res = RESULTS[top];
+  const res2 = RESULTS[second];
+  const pct = Math.round(score[top] / appear[top] * 100);
+
+  document.getElementById('r-portrait').innerHTML = PORTRAITS[top];
+
+  const nameEl = document.getElementById('r-name');
+  nameEl.textContent = res.name;
+  nameEl.style.color = res.color;
+  nameEl.style.textShadow = '0 0 40px ' + res.color + '66';
+  document.getElementById('r-sub').textContent = res.subtitle;
+  document.getElementById('r-duo').innerHTML =
+    '与之纠缠的另一个人格 · <b>' + res2.name + '</b>';
+  document.getElementById('r-pct').textContent = pct + '%';
+  document.getElementById('r-bar').style.width = '0%';
+
+  const tags = document.getElementById('r-tags');
+  tags.innerHTML = '';
+  res.keywords.forEach(k => {
+    const s = document.createElement('span');
+    s.className = 'tag on';
+    s.textContent = k;
+    tags.appendChild(s);
+  });
+
+  document.getElementById('r-core').textContent = res.core;
+  document.getElementById('r-fear').textContent = res.fear;
+  document.getElementById('r-style').textContent = res.style;
+  document.getElementById('r-arch').textContent = res.archetype.join(' · ');
+  document.getElementById('r-answer').textContent = finalAnswer || '（未填写）';
+  document.getElementById('r-quote').textContent = res.quote;
+
+  const ana = document.getElementById('r-analysis');
+  ana.innerHTML = '';
+  res.analysis.forEach(p => {
+    const el = document.createElement('p');
+    el.textContent = p;
+    ana.appendChild(el);
+  });
+
+  document.getElementById('r-link').textContent =
+    location.origin + location.pathname + '?invite=' + INVITE_CODE;
+
+  submitToFormspree(finalAnswer, res.name + ' · ' + res.subtitle);
+
+  updateMood();
+  showScreen('screen-result');
+  requestAnimationFrame(() => {
+    document.getElementById('r-bar').style.width = pct + '%';
+  });
+}
+
+function startQuiz() {
+  current = 0;
+  answers = [];
+  finalAnswer = '';
+  updateMood();
+  const bar = document.getElementById('subtitle');
+  bar.classList.remove('show');
+  bar.setAttribute('aria-hidden', 'true');
+  showScreen('screen-quiz');
+  renderQuestion();
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const urlParams = new URLSearchParams(window.location.search);
+  const invite = urlParams.get('invite');
+
+  // 记录管理页
+  if (urlParams.get('admin') === ADMIN_PARAM) {
+    showAdmin();
+    document.getElementById('admin-back').addEventListener('click', () => {
+      location.href = location.pathname;
+    });
+    return;
+  }
+
+  // 邀请码判断
+  if (REQUIRE_INVITE && invite !== INVITE_CODE) {
+    showScreen('screen-lock');
+  } else {
+    showScreen('screen-intro');
+  }
+
+  // 按钮
+  document.getElementById('btn-start').addEventListener('click', startQuiz);
+  document.getElementById('btn-retry').addEventListener('click', startQuiz);
+  document.getElementById('btn-home').addEventListener('click', () => {
+    current = 0;
+    updateMood();
+    showScreen('screen-intro');
+  });
+
+  // 最终开放题
+  const finalInput = document.getElementById('final-input');
+  const finalSubmit = document.getElementById('final-submit');
+  finalInput.addEventListener('input', () => {
+    finalSubmit.disabled = finalInput.value.trim().length === 0;
+  });
+  finalInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !finalSubmit.disabled) submitFinal();
+  });
+  finalSubmit.addEventListener('click', submitFinal);
+
+  function submitFinal() {
+    const a = finalInput.value.trim();
+    if (!a) return;
+    finalAnswer = a;
+    recordAnswer(a);
+    finish();
+  }
+
+  // 背景音乐：尝试自动播放 + 首次交互兜底
+  const bgm = document.getElementById('bgm');
+  const musicBtn = document.getElementById('musicBtn');
+  const musicIcon = document.getElementById('musicIcon');
+  let isPlaying = false;
+
+  function setPlaying(on) {
+    isPlaying = on;
+    musicBtn.classList.toggle('on', on);
+    musicIcon.textContent = on ? '❚❚' : '♪';
+  }
+  function cleanupResume() {
+    window.removeEventListener('click', resumeOnInteraction);
+    window.removeEventListener('touchstart', resumeOnInteraction);
+    window.removeEventListener('keydown', resumeOnInteraction);
+  }
+  function resumeOnInteraction() {
+    tryPlay();
+  }
+  function tryPlay() {
+    if (isPlaying) return;
+    bgm.play().then(() => {
+      setPlaying(true);
+      cleanupResume();
+    }).catch(() => {});
+  }
+
+  musicBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (isPlaying) {
+      bgm.pause();
+      setPlaying(false);
+    } else {
+      tryPlay();
+    }
+  });
+
+  tryPlay();
+  window.addEventListener('click', resumeOnInteraction);
+  window.addEventListener('touchstart', resumeOnInteraction);
+  window.addEventListener('keydown', resumeOnInteraction);
+});
+</script>
+</body>
+</html>
